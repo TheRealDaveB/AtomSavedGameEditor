@@ -1,0 +1,637 @@
+﻿@{
+    ViewBag.Title = "ATOM Saved Game Editor";
+}
+<div class="ribbonOuter">
+    <div class="ribbonInner">Alpha</div>
+</div>
+<h1>ATOM Save Game Editor</h1>
+<footer>
+    <ul>
+        <li id="creditsButton">Credits</li>
+        <li id="issuesButton">Bugs &amp; Issues</li>
+        <li id="faqButton">FAQ</li>
+        <li><a id="videoButton" href="" target="_blank">Instructional Video</a></li>
+        <li id="logButton">Log</li>
+    </ul>
+</footer>
+<div class="atomIntro">
+    <div class="center">
+        <label class="fileUpload">
+            <input type="file" id="loadGzipFileButton" accept=".as" />
+            Select save game file to edit...
+        </label>
+    </div>
+    <div>
+        <p>Use the button above to open and edit a ATOM RPG save game (*.as) file.</p>
+        <p>
+            These files live in the
+            <span class="savegameDirectory">%USERPROFILE%\AppData\LocalLow\atomteam\atom\</span> directory in Windows and the
+            <span class="savegameDirectory">~/Library/Application Support/unity.AtomTeam.unity/</span> on Mac.
+        </p>
+        <p>Save_-1 is your last autosave. Save_0 is your last quicksave.</p>
+        <p>Make a note of the location, as you'll need to save (or copy) the result back there later.</p>
+        <p>
+            If this is all <a href="https://en.wiktionary.org/wiki/gobbledygook" target="_blank">gobbledygook</a>
+            to you, here&apos;s <a href="todo" target="_blank">a YouTube video</a> showing the process end-to-end on Windows.
+        </p>
+        <hr />
+        <p class="warning">This editor is currently in Alpha. Thank you for helping with the testing!</p>
+        <p>
+            Please send feedback / bug reports via Steam PM or guide comment. While I&apos;ve used it safely on my own saved
+            games, I give no warrenty as fix any particularly purpose.
+        </p>
+        <hr />
+    </div>
+    <div class="introSubHeading">Remember: Never edit your only copy of a save!</div>
+    <ul>
+        <li>Always back-up your save files before uploading and editing, particularly during Alpha.</li>
+        <li>
+            Use the simple editor to quickly &amp; and easily change stats, skills, and conditions for your characters through UI.
+            The adventurous can use the advanced editor to directly edit the embedded JSON files manually!
+        </li>
+    </ul>
+</div>
+
+<div class="atomEditor">
+    <div id="abandon" class="button">Abandon edits and return to intro page.</div>
+    <div class="sourceFile">
+        Currently editing: <span id="sourceFileDetails"></span>
+    </div>
+    <div class="tabHeaders">
+        <div id="simpleEditTabHeader" class="tab selected">Simple Editor</div><div id="advancedEditTabHeader" class="tab">Advanced Editor</div>
+    </div>
+    <div class="tabBodies">
+        <div class="simpleEditor">
+            <div class="tableHeader">Stats</div>
+            <div class="tableSubHeader">Add or remove 1 point at a time. Values shown here are before modifiers such a hunger, radiation, stat bonuses, and perks are applied.</div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Character</th>
+                        <th>Level</th>
+                        <th>XP</th>
+                        <th>Strength</th>
+                        <th>Endurance</th>
+                        <th>Dexterity</th>
+                        <th>Intelligence</th>
+                        <th>Attention</th>
+                        <th>Personality</th>
+                        <th>Luck</th>
+                        <th>Skill Points</th>
+                        <th>Stat Points</th>
+                        <th>Spec Points</th>
+                        <th>Spec Level</th>
+                    </tr>
+                </thead>
+                <tbody id="statsBody"></tbody>
+            </table>
+            <div class="spacer"></div>
+            <div class="tableHeader">Skills</div>
+            <div class="tableSubHeader">Add or remove 5 point at a time. Values shown here are before modifiers such a hunger, radiation and perks are applied.</div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Character</th>
+                        <th>Martial<br />Arts</th>
+                        <th>Melee<br />Weapons</th>
+                        <th>Pistols<br />and SMG</th>
+                        <th>Rifles and<br />shotguns</th>
+                        <th>Automatic<br />Firearms</th>
+                        <th>Throwing<br />Weapons</th>
+                        <th>Speech</th>
+                        <th>Barter</th>
+                        <th>Gambling</th>
+                        <th>Survival</th>
+                        <th>First Aid</th>
+                        <th>Stealth</th>
+                        <th>Lock<br />Picking</th>
+                        <th>Pickpocket</th>
+                        <th>Technology</th>
+                        <th>Tinkering</th>
+                        <th>Alertness</th>
+                    </tr>
+                </thead>
+                <tbody id="skillsBody"></tbody>
+            </table>
+            <div class="spacer"></div>
+            <div class="tableHeader">Conditions</div>
+            <div class="tableSubHeader">Untested (there are related settings that may need to be kept in sync). Add or remove 100 points at a time (1 point at a time for HungerDmg).</div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Character</th>
+                        <th>Toxic</th>
+                        <th>Radiation</th>
+                        <th>Hunger</th>
+                        <th>HungerDmg</th>
+                        <th>Rolling</th>
+                    </tr>
+                </thead>
+                <tbody id="conditionsBody"></tbody>
+            </table>
+            <div id="simpleEditorSave" class="button"><img src="~/Content/download.png" /><span>Save and Export</span></div>
+        </div>
+        <div class="advancedEditor">
+            <div class="advancedEditorSidebar">
+                <ul>
+                    <li>Always back up your save file before editing. Never work on your only copy!</li>
+                    <li>Only editing of .dat (JSON) files is currently supported.</li>
+                    <li>Make sure to save your changes before moving to a different file, otherwise your changes will be discarded.</li>
+                    <li>When the text cursor is in the editor, press Ctrl+F to search for text (if you get the browser&apos;s search box, click in the text in the editor and try again!)</li>
+                </ul>
+                <div id="advancedEditorSave" class="button"><img src="~/Content/download.png" /><span>Save</span></div>
+                <div id="advancedEditorExport" class="button"><img src="~/Content/download.png" /><span>Export .as file</span></div>
+            </div>
+            <div id="fileList" class="fileList"></div>
+            <div class="monacoOuterContainer">
+                <div class="monacoInnerContainer" id="monaco"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="creditsDialog" class="atomDialog" title="Credits">
+    <ul>
+        <li>
+            Coding / Website / Investigation / Additional Graphics -
+            <a href="https://steamcommunity.com/id/TheRealDaveB/myworkshopfiles/?section=guides"
+               target="_blank">Dave B.</a>
+        </li>
+        <li>Export and External Link Graphics &amp; Images - Public domain sources</li>
+        <li>
+            Made possible by the <a href="https://github.com/nodeca/pako/blob/master/LICENSE" target="_blank">pako</a> and
+            <a href="https://github.com/Microsoft/monaco-editor/blob/master/LICENSE.md" target="_blank">Monoco</a> libraries.
+        </li>
+        <li>
+            UTF8 handling code taken from work by
+            <a href="https://weblog.rogueamoeba.com/2017/02/27/javascript-correctly-converting-a-byte-array-to-a-utf-8-string/" target="_blank">
+                Rogue Amoeba
+            </a> and <a href="https://gist.github.com/joni/3760795" target="_blank">Joni Salonen</a>
+        </li>
+        <li>
+            Mac file location from a Steam posting by
+            <a href="https://steamcommunity.com/app/552620/discussions/1/1744483505461252968/" target="_blank">Igor.maxuk</a>
+        </li>
+        <li>Inspired by <a href="https://steamcommunity.com/sharedfiles/filedetails/?id=1617844106" target="_blank">Tam's Steam Guide</a>, and other postings.</li>
+    </ul>
+    <div>Thanks all!</div>
+    <hr />
+    <div><a href="https://github.com/TheRealDaveB/AtomSavedGameEditor" target="_blank">Source code is available on github.</a></div>
+</div>
+
+<div id="faqDialog" class="atomDialog" title="FAQ">
+    <ol class="headeredList">
+        <li>
+            What&apos;s your relationship to AtomTeam (the developer & publisher of ATOM RPG)
+            <p>None. Just a happy fan.</p>
+        </li>
+        <li>
+            Are you harvesting my personal data / saved game files?
+            <p>
+                No. Thanks to some clever libraries by some clever folks, I was able to do all the work
+                within your browser. Your IP address is probably in a server log somewhere, but that's all.
+            </p>
+        </li>
+        <li>
+            Why a web page? Most editors are EXEs. If you were an EXE, we wouldn't have to mess around
+            with the Load and Save Dialogs!
+            <p>
+                Two reasons:
+                <ul>
+                    <li>
+                        Firstly, I wouldn't download and trust a random EXE I found on the internet,
+                        so why should I expect you to?
+                    </li>
+                    <li>
+                        Secondly, it&apos;s I needed a personal project to refresh
+                        my somewhat rusty JavaScript skills after a couple of years rocking backend services and
+                        big data ;-)
+                    </li>
+                </ul>
+        </li>
+        <li>
+            You filthy cheater! Get gud you lozer!<p>
+                I don't like to play games twice (unless it&apos;s years apart), and I
+                don't like to feel I'm missing things on my single playthrough.
+            </p>
+            <p>
+                To be honest, I found myself save scumming a lot. So whacking up my Tinkering, Technology,
+                Personality and Luck stats has greatly improved my experience without devaluating the
+                value of the skill points I get through leveling. Similarly, the game is a lot more fun
+                (for me) when I can see my follower&apos;s health and what the opposition
+                is armed with, so I gave myself the corresponding perks rather than having to chose
+                those and the &apos;mandatory&apos; ones.
+            </p>
+        </li>
+        <li>
+            Why don't the Load / Save game dialogs default to the correct location?<p>
+                Browser security prevents it. Trust me, its a good thing. If a web page could control
+                where files were loaded from or saved to it could easily read a personal file or overwrite
+                a system file with a virus.
+            </p>
+            <p>
+                Even the path to places like MyDocuments can include the signed-in
+                user&apos;s name, so the browser won't even share the name of the
+                folder you selected in the File Open dialog with me...
+            </p>
+        </li>
+        <li>
+            Wow. Why is your web-page like 750KB in size, yet looks like it was designed in 1995?!?
+            <p>
+                Size: I was too lazy to work out how to lazy load the Monaco library (~710KB), and
+                pull in more of JQuery than I really need. Maybe I'll optimize in a later version...
+            <p>
+            <p>
+                Look: Umm... err... no real excuse. I suck at pushing pixels and have always depended on designers at work.
+            </p>
+        </li>
+        <li>
+            Why are the stats limited to 10 and skills to 199?<p>
+                I haven't done any testing personally, but posts on Steam suggest
+                going over these limits cause Bad Things To Happen&trade; for now.
+                These limits only apply to values in the Simple Editor, so if you
+                want to exceed them, you can do so through the Advanced Editor.
+            </p>
+        </li>
+        <li>
+            Can you edit X for me / help me with my Save File?<p>
+                No, I'm lazy and this is a side project I mostly knocked together one Sunday. You can
+                use the Advanced editor to edit pretty much anything yourself though.
+            </p>
+        </li>
+        <li>
+            Have you seen anything interesting in the Save Game files?<p>
+                Yes. The original names of the stats, that Skeletons are actually chests (logical when
+                you think about it, but it does mean they have associated properties for things like lock
+                difficulty and pin number!), and that you character model is scaled down.
+            </p>
+        </li>
+    </ol>
+</div>
+
+<div id="issuesDialog" class="atomDialog" title="Known bugs &amp; issues">
+    <ol>
+        <li>CSS issue with small gap on the left hand borders on editor tabs</li>
+        <li>Monaco editor still has a couple of inappropriate Intellisence entries</li>
+        <li>
+            UTF8 encoding/decoding isn't fully tested (there are no non-ASCII range characters in any of my saves,
+            YMMV, particularly if you are using non-English character sets). If an extended UTF-& character is
+            detected, a warning message will be written to the console.
+        </li>
+        <li>While the simple editor supports conditions (hunger, radiation, etc.), this hasn't been tested yet.</li>
+        <li>
+            Clicking a json file in the left hand nav of the advanced editor will discard any pending changes in
+            the current file without warning (even if the file clicked is the currently selected file).
+        </li>
+        <li>The Abandon button does not ask for confirmation.</li>
+        <li>Pressing ESC on the load dialog is not gracefully handled.</li>
+        <li>Monaco is loaded even if the user doesn't use the advanced editor.</li>
+        <li>
+            The easy editor and the advanced editor work off separate buffers. You can't toggle between them
+            and see changes made in one reflected in the other (without exporting & reimporting).
+        </li>
+    </ol>
+</div>
+
+<div id="logDialog" class="atomDialog" title="Log">
+    <ul id="log"></ul>
+</div>
+
+<script type="text/javascript" src="~/Scripts/atomEditor.js"></script>
+<script type="text/javascript" src="~/Scripts/savedGame.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pako/1.0.8/pako.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.15.6/min/vs/loader.js"></script>
+
+<script>
+    "use strict";
+    InitializeLog();
+    CheckFileApisSupported();
+
+    var savedGame;
+    var editor;
+    var simpleEditorJson;
+    var advancedEditorSelectedFile;
+    
+    // Hook the unhandled exceptions so they are (a) logged and (b) not silent for the user
+    window.onerror = function (message, url, line, column, error) {
+        var str = `Error: ${message}\nURL: ${url}, line: ${line}, ${(column ? ", column: " + column : "")} ${(error ? "\nError: " + error : "")}"`;
+        Log(str, true);
+        alert(str);
+        return false;
+    };
+
+
+    /* Simple Editor UI handlers and functions */
+
+    function handlePlusMinus(element, index, propertyPath, delta, notBeyond) {
+        /// <summary>Handles the user clicking a plus or minus button on a spinner cell in the Simple Editor UI</summary>
+        /// <param name="element">Clicked element.  The code assumes the layout is <button><text><button></param>
+        /// <param name="index">The index of the (PC or Party member) character within the JSON</param>
+        /// <param name="propertyPath">Propery path from the character JSON to the value being edited.</param>
+        /// <param name="delta">The amount to change the property value / displayed text by</param>
+        /// <param name="notBeyond">The amount the value must not exceed (if delta is positive) or
+        /// be less than (if delta is negative)</param>
+
+        var jsonValue = GetProperty(simpleEditorJson[index], propertyPath);
+        var newValue = parseInt(jsonValue) + delta;
+
+        if (delta > 0) {
+            if (newValue > notBeyond) newValue = notBeyond;
+            $(element).prev().text(newValue);
+        }
+        else {
+            if (newValue < notBeyond) newValue = notBeyond;
+            $(element).next().text(newValue);
+        }
+
+        SetProperty(simpleEditorJson[index], propertyPath, newValue.toString());
+    }
+
+    function spinnerCell(index, propertyPath, options) {
+        /// <summary>Renders a spinner table cell (-button, text, +button)</summary>
+        /// <param name="index">The index of the (PC or Party member) character within the JSON</param>
+        /// <param name="propertyPath">Propery path from the character JSON to the value being edited.</param>
+        /// <param name="options">Configuration options {step: step size, min: minimum value allowed, max: maximum value allowed}</param>
+        var json = simpleEditorJson[index];
+        options = options || {};
+        options.step = options.step || 1;
+        options.min = options.min || 0;
+        options.max = options.max || 10;
+        return `<td><div class="plusMinus" onclick="handlePlusMinus(this, ${index}, '${propertyPath}', -${options.step}, ${options.min}, ${options.container})">-</div>`
+            + `<div class="stat">${GetProperty(json, propertyPath)}</div>`
+            + `<div class="plusMinus" onclick="handlePlusMinus(this, ${index}, '${propertyPath}', +${options.step}, ${options.max}, ${options.container})">+</div></td>`;
+    }
+
+    function initializeSimpleEditor() {
+        /// <summary>Initializes (or re-intializes) the Simple Editor UI</summary>
+        var $statsBody = $("#statsBody"),
+            $skillsBody = $("#skillsBody"),
+            $conditionsBody = $("#conditionsBody");
+
+        $statsBody.html("");
+        $skillsBody.html("");
+        $conditionsBody.html("");
+
+        simpleEditorJson = savedGame.getJson('player.dat');
+        for (var rowIndex = 0; rowIndex < simpleEditorJson.length; rowIndex++) {
+            var data = simpleEditorJson[rowIndex];
+            var characterName = savedGame.mapCharacterName(data.character);
+
+            $statsBody.append(`<tr><td>${characterName}</td>`
+                + spinnerCell(rowIndex, "stats.level", { max: 99 })
+                + spinnerCell(rowIndex, "stats.xp", { max: 999999, step: 1000 })
+                + spinnerCell(rowIndex, "stats.strength")
+                + spinnerCell(rowIndex, "stats.endurance")
+                + spinnerCell(rowIndex, "stats.agility")
+                + spinnerCell(rowIndex, "stats.intelligence")
+                + spinnerCell(rowIndex, "stats.perception")
+                + spinnerCell(rowIndex, "stats.charisma")
+                + spinnerCell(rowIndex, "stats.luck")
+                + spinnerCell(rowIndex, "stats.freeSkillPoints")
+                + spinnerCell(rowIndex, "stats.freeStatPoints")
+                + spinnerCell(rowIndex, "stats.freeSpecPoints")
+                + spinnerCell(rowIndex, "stats.specLevel")
+                + "</tr>");
+
+            $skillsBody.append(`<tr><td>${characterName}</td>`
+                + spinnerCell(rowIndex, "stats.skills.Unarmed", { max: 199, step: 5 })
+                + spinnerCell(rowIndex, "stats.skills.MeleeWeapons", { max: 199, step: 5 })
+                + spinnerCell(rowIndex, "stats.skills.SmallGuns", { max: 199, step: 5 })
+                + spinnerCell(rowIndex, "stats.skills.BigGuns", { max: 199, step: 5 })
+                + spinnerCell(rowIndex, "stats.skills.AutomaticFirearms", { max: 199, step: 5 })
+                + spinnerCell(rowIndex, "stats.skills.Throwing", { max: 199, step: 5 })
+                + spinnerCell(rowIndex, "stats.skills.Speech", { max: 199, step: 5 })
+                + spinnerCell(rowIndex, "stats.skills.Barter", { max: 199, step: 5 })
+                + spinnerCell(rowIndex, "stats.skills.Gambling", { max: 199, step: 5 })
+                + spinnerCell(rowIndex, "stats.skills.Outdoorsman", { max: 199, step: 5 })
+                + spinnerCell(rowIndex, "stats.skills.FirstAid", { max: 199, step: 5 })
+                + spinnerCell(rowIndex, "stats.skills.Sneak", { max: 199, step: 5 })
+                + spinnerCell(rowIndex, "stats.skills.Lockpick", { max: 199, step: 5 })
+                + spinnerCell(rowIndex, "stats.skills.Steal", { max: 199, step: 5 })
+                + spinnerCell(rowIndex, "stats.skills.Science", { max: 199, step: 5 })
+                + spinnerCell(rowIndex, "stats.skills.Crafting", { max: 199, step: 5 })
+                + spinnerCell(rowIndex, "stats.skills.Alertness", { max: 199, step: 5 })
+                
+                + "</tr>");
+
+            $conditionsBody.append(`<tr><td>${characterName}</td>`
+                + spinnerCell(rowIndex, "conditions.toxic", { max: 999999, step: 100 })
+                + spinnerCell(rowIndex, "conditions.radiation", { max: 999999, step: 100 })
+                + spinnerCell(rowIndex, "conditions.hunger", { max: 999999, step: 100 })
+                + spinnerCell(rowIndex, "conditions.hungerDmg", { max: 99, step: 1 })
+                + spinnerCell(rowIndex, "conditions.rolling", { max: 999999, step: 100 })
+                + "</tr>");
+
+            $("#simpleEditTabHeader").click();
+        }
+    }
+
+    /* Advanced Editor handlers and functions */
+    function selectFileToEdit(elementOrFilename) {
+        var filename, element;
+        if (typeof (elementOrFilename) == "string") {
+            filename = elementOrFilename;
+            // Since the element name is built from the filename, it contains a dot (.dat)
+            // JQuery select then interprets .dat as being a class selector.
+            // We could escape with a regex ( . -> \\.), but then we'd have to escape the regex...
+            // It's easier to just go directly to the DOM
+            // element = $("#file_" + escape(filename)).element;
+            element = document.getElementById("file_" + escape(filename));
+        }
+        else {
+            filename = elementOrFilename.id.substring(5);
+            element = elementOrFilename;
+        }
+
+        advancedEditorSelectedFile = filename;
+
+        Log("Getting JSON...");
+        var jsonString = PrettifyJson(savedGame.getJson(filename));
+
+        Log("Loading JSON into Monaco...");
+        $("#fileList>div.selected").removeClass("selected");
+        $(element).addClass("selected");
+        element.scrollIntoView();
+        editor.setValue(jsonString);
+
+        Log("Ready for editing.");
+    }
+
+    function handleLoadGzipButton(evt) {
+        var gzipFile = evt.target.files[0];
+        if (!gzipFile) {
+            // User hit escape or cancelled
+            return;
+        }
+
+        ClearLog();
+        $(".atomIntro").hide();
+        $(".atomEditor").show();
+        Log("Loading " + gzipFile.name + "");
+        $("#sourceFileDetails").html(escape(gzipFile.name) + " (" + gzipFile.size + " bytes, last modified: " + gzipFile.lastModifiedDate.toLocaleDateString() + ")");
+
+        var fileReader = new FileReader();
+        fileReader.onload = function (event) {
+            Log("Read " + fileReader.result.byteLength + " bytes");
+
+            Log("Unzipping...");
+            var data = pako.inflate(fileReader.result);
+            Log("Decompressed size: " + data.byteLength + " bytes");
+            // delete fileReader; // Free up some memory // Not allowed in strict mode
+
+            Log("Initializing class...");
+            savedGame = new SavedGame(data, gzipFile.name);
+
+            Log("Populating file list UI...");
+            var $fileList = $("#fileList");
+            $fileList.html("");
+            for (var i = 0; i < savedGame.files.length; i++) {
+                var file = savedGame.files[i];
+                var id = "file_" + escape(file.filename);
+                var className = id.endsWith(".dat") ? "jsonFile" : "binaryFile";
+                var html = "<div class='" + className + "' id='" + id + "' ";
+                if (className == "jsonFile") html += " onclick='selectFileToEdit(this)'";
+                html += ">" + EscapeHtml(file.filename) + " (Org.Size: " + file.filesize + ")</div>";
+                $fileList.append(html);
+            }
+
+            // Delay initialization of monaco as it won't initialize correctly when the contains has display:none set
+            if (!editor) {
+                Log("Initializing Monaco...");
+
+                editor = monaco.editor.create(document.getElementById('monaco'), {
+                    value: "",
+                    language: 'json'
+                });
+
+                editor.updateOptions({
+                    "autoIndent": true,
+                    "formatOnPaste": true,
+                    "formatOnType": true,
+                    "folding": true
+                });
+            }
+
+            initializeSimpleEditor();
+            selectFileToEdit('player.dat');
+        }
+        fileReader.readAsArrayBuffer(gzipFile);
+    }
+
+    $("#loadGzipFileButton").change(handleLoadGzipButton);
+
+    $(".showHide").click(function (event) {
+        $(event.target.parentElement).children(".showHideTarget").toggle();
+    });
+
+    $("#abandon").click(function (event) {
+        ClearLog();
+        Log("Abandoned previous file.");
+        $(".atomEditor").hide();
+        $(".atomIntro").show();
+    });
+
+    $(".savegameDirectory").click(function (event) {
+        prompt("Copy the following text to your clipboard (Ctrl+C on Windows), then paste it (Ctrl+V " +
+            "on Windows) into the File Open dialog to get to the saved files directory quickly.",
+            event.target.textContent);
+    });
+
+    $("#simpleEditTabHeader").click(function (event) {
+        $("#simpleEditTabHeader").addClass("selected");
+        $("#advancedEditTabHeader").removeClass("selected");
+        $(".simpleEditor").show();
+        $(".advancedEditor").hide();
+    });
+
+    $("#advancedEditTabHeader").click(function (event) {
+        $("#simpleEditTabHeader").removeClass("selected");
+        $("#advancedEditTabHeader").addClass("selected");
+        $(".simpleEditor").hide();
+        $(".advancedEditor").show();
+    });
+
+    $("#simpleEditorSave").click(function (event) {
+        savedGame.updateJson('player.dat', simpleEditorJson);
+        savedGame.export();
+    });
+
+    function handleAdvancedSave(event) {
+        var jsonAsString = editor.getValue();
+        var json;
+
+        // Although Monaco knows whether the JSON is valid JSON or not, it doesn't seem to expose that detail.
+        // So we'll check ourselves
+        try {
+            json = JSON.parse(jsonAsString);
+        } catch (err) {
+            alert("File is not valid JSON. Errors are highlighted in the scroll bar, and by red waving underlined text.\n\n" + err.message);
+            return false;
+        }
+
+        savedGame.updateJson(advancedEditorSelectedFile, json);
+        return true;
+    };
+
+    $("#advancedEditorSave").click(handleAdvancedSave);
+
+    $("#advancedEditorExport").click(function (event) {
+        if (handleAdvancedSave(event)) {
+            savedGame.export();
+        }
+    });
+
+    // START: Hack to make Monaco work from a CDN is taken from https://github.com/Microsoft/monaco-editor/blob/master/docs/integrate-amd-cross.md
+    require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.15.6/min/vs' } });
+
+    // Before loading vs/editor/editor.main, define a global MonacoEnvironment that overwrites
+    // the default worker url location (used when creating WebWorkers). The problem here is that
+    // HTML5 does not allow cross-domain web workers, so we need to proxy the instantiation of
+    // a web worker through a same-domain script
+    window.MonacoEnvironment = {
+        getWorkerUrl: function (workerId, label) {
+            return `data:text/javascript;charset=utf-8,${encodeURIComponent(`
+                self.MonacoEnvironment = {
+                  baseUrl: 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.15.6/min/'
+                };
+                importScripts('https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.15.6/min/vs/base/worker/workerMain.js');`
+            )}`;
+        }
+    };
+    // END: Hack to make Monaco work from a CDN is taken from https://github.com/Microsoft/monaco-editor/blob/master/docs/integrate-amd-cross.md
+
+    require(['vs/editor/editor.main'], function () {
+    });
+
+    // Set up dialog handlers for the links in the footers
+    var maxHeight = window.innerHeight * 0.9;
+    var dialogOptions = {
+        modal: true,
+        width: "50em",
+        closeText: "Close",
+        maxHeight: maxHeight,
+        // Make it so clicking outside of the modal dialog closes it
+        open: function (event, ui) {
+            $('.ui-widget-overlay').bind('click', function () {
+                $(this).siblings('.ui-dialog').find('.ui-dialog-content').dialog('close');
+            })
+        },
+        close: function (event, ui) { $('#wrap').show(); }
+    };
+
+    $("#creditsButton").click(function (event) {
+        $("#creditsDialog").dialog(dialogOptions).show();
+    });
+
+    $("#issuesButton").click(function (event) {
+        $("#issuesDialog").dialog(dialogOptions);
+    });
+
+    $("#faqButton").click(function (event) {
+        $("#faqDialog").dialog(dialogOptions);
+    });
+
+    $("#logButton").click(function (event) {
+        $("#logDialog").dialog(dialogOptions);
+    });
+</script>

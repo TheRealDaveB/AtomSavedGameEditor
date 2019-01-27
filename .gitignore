@@ -1,0 +1,10 @@
+*.pubxml
+*.user
+*.sln
+*.suo
+.vs/**
+bin/**
+obj/**
+packages/**
+website/**
+
