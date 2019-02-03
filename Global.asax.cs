@@ -32,6 +32,7 @@ namespace AtomEditorWebsite
                 if (builder.Host != "localhost")
                 {
                     builder.Scheme = "https";
+                    builder.Port = 443;
                     Response.RedirectPermanent(builder.ToString());
                 }
             }
