@@ -123,6 +123,7 @@
     <Content Include="Content\download.png" />
     <Content Include="Content\external.png" />
     <Content Include="Content\GuideIcon.jpg" />
+    <Content Include="SiteMap.xml" />
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
