@@ -306,11 +306,6 @@ tr:nth-child(even) {
         background-color: turquoise;
     }
 
-.showHide {
-    cursor: pointer;
-    text-decoration: underline;
-}
-
 .simpleEditor {
     font-family: 'Special Elite', Arial, sans-serif;
     margin: 0.5em;

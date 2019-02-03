@@ -521,15 +521,15 @@
 
     $("#loadGzipFileButton").change(handleLoadGzipButton);
 
-    $(".showHide").click(function (event) {
-        $(event.target.parentElement).children(".showHideTarget").toggle();
-    });
-
     $("#abandon").click(function (event) {
         ClearLog();
         Log("Abandoned previous file.");
         $(".atomEditor").hide();
         $(".atomIntro").show();
+
+        // Clear the file input value (else onchange won't fire if the user selects the same file again)
+        var $fileInput = $("#loadGzipFileButton");
+        $fileInput.replaceWith($fileInput.val('').clone(true));
     });
 
     $(".savegameDirectory").click(function (event) {
