@@ -22,5 +22,19 @@ namespace AtomEditorWebsite
                 defaults: new { controller = "Home", action = "Index", id = UrlParameter.Optional }
             );
         }
+
+        protected void Application_BeginRequest()
+        {
+            // Redirect http requests to https
+            if (!Context.Request.IsSecureConnection)
+            {
+                UriBuilder builder = new UriBuilder(Context.Request.Url);
+                if (builder.Host != "localhost")
+                {
+                    builder.Scheme = "https";
+                    Response.RedirectPermanent(builder.ToString());
+                }
+            }
+        }
     }
 }
