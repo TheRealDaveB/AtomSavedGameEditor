@@ -5,6 +5,7 @@
     <div class="ribbonInner">Alpha</div>
 </div>
 <h1>ATOM Save Game Editor</h1>
+<h2>v. 2019-02-05</h2>
 <footer>
     <ul>
         <li id="creditsButton">Credits</li>
@@ -469,7 +470,7 @@
         $(".atomIntro").hide();
         $(".atomEditor").show();
         Log("Loading " + gzipFile.name + "");
-        $("#sourceFileDetails").html(escape(gzipFile.name) + " (" + gzipFile.size + " bytes, last modified: " + gzipFile.lastModifiedDate.toLocaleDateString() + ")");
+        $("#sourceFileDetails").html(escape(gzipFile.name) + " (" + gzipFile.size + " bytes, last modified: " + new Date(gzipFile.lastModified).toLocaleDateString() + ")");
 
         var fileReader = new FileReader();
         fileReader.onload = function (event) {
