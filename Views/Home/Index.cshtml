@@ -2,15 +2,15 @@
     ViewBag.Title = "ATOM Saved Game Editor";
 }
 <div class="ribbonOuter">
-    <div class="ribbonInner">Alpha</div>
+    <div class="ribbonInner">Beta</div>
 </div>
 <h1>ATOM Save Game Editor</h1>
-<h2>v. 2019-02-05</h2>
+<h2>v. 2019-02-19</h2>
 <footer>
     <ul>
         <li id="creditsButton">Credits</li>
         <li id="issuesButton">Bugs &amp; Issues</li>
-        <li id="faqButton">FAQ</li>
+        <li id="faqButton">FAQ &nbsp;&amp; Release Notes</li>
         <li><a id="videoButton" href="https://www.youtube.com/playlist?list=PLYPKkqhepke9FqnYr0znfuzMRUFCn4nlp" target="_blank">Video Tutorials</a></li>
         <li id="logButton">Log</li>
     </ul>
@@ -25,19 +25,21 @@
     <div>
         <p>Use the button above to open and edit a ATOM RPG save game (*.as) file.</p>
         <p>
+            Save_-1 is your last autosave. Save_0 is your last quicksave. Save_-2 is your Survival mode save.
+        </p>
+        <p>
             These files live in the
             <span class="savegameDirectory">%USERPROFILE%\AppData\LocalLow\atomteam\atom\</span> directory in Windows and the
             <span class="savegameDirectory">~/Library/Application Support/unity.AtomTeam.unity/</span> on Mac.
         </p>
-        <p>Save_-1 is your last autosave. Save_0 is your last quicksave.</p>
-        <p>Make a note of the location, as you'll need to save (or copy) the result back there later.</p>
+        <p>Make a note of (or pin) this location, as you'll need to save (or copy) the result back there later.</p>
         <p>
             If this is all <a href="https://en.wiktionary.org/wiki/gobbledygook" target="_blank">gobbledygook</a>
             to you, there are <a href="https://www.youtube.com/playlist?list=PLYPKkqhepke9FqnYr0znfuzMRUFCn4nlp" target="_blank">
-            YouTube tutorial videos</a> showing the entire process end-to-end on Windows.
+                YouTube tutorial videos
+            </a> showing the entire process end-to-end on Windows.
         </p>
         <hr />
-        <p class="warning">This editor is currently in Alpha. Thank you for helping with the testing!</p>
         <p>
             Please send feedback / bug reports via Steam PM or guide comment. While I&apos;ve used it safely on my own saved
             games, I give no warrenty as fit for any particular purpose.
@@ -181,7 +183,8 @@
     <div><a href="https://github.com/TheRealDaveB/AtomSavedGameEditor" target="_blank">Source code is available on github.</a></div>
 </div>
 
-<div id="faqDialog" class="atomDialog" title="FAQ">
+<div id="faqDialog" class="atomDialog" title="">
+    <h2>Frequently Asked Questions</h2>
     <ol class="headeredList">
         <li>
             What&apos;s your relationship to AtomTeam (the developer & publisher of ATOM RPG)
@@ -265,10 +268,34 @@
             Have you seen anything interesting in the Save Game files?<p>
                 Yes. The original names of the stats, that Skeletons are actually chests (logical when
                 you think about it, but it does mean they have associated properties for things like lock
-                difficulty and pin number!), and that you character model is scaled down.
+                difficulty and pin number!), cars have a speed value, and that you character model is 
+                scaled down.
             </p>
         </li>
     </ol>
+    <br />
+    <h2>Release Notes</h2>
+    <ul class="headeredList">
+        <li>
+            v. 2109-02-19 Beta Release
+            <ul>
+                <li>Fixed 'Cannot read property 'level' of undefined' error rendering the Simple Editor
+                    when the tutorial guy from the Training Camp is in the party.</li>
+                <li>Fixed bug where the cap for stats was also being applied to Free Skill Points,
+                    Free Stat Points, Free Spec Points and Spec Level.</li>
+                <li>Updated text on intro page.</li>
+                <li>Moved from Alpha to Beta since I've now completed the game on an edited save.</li>
+            </ul>
+        </li>
+        <li>
+            v. 2109-02-5 FireFox fix
+            <ul><li>Fixed FireFox specific error "evaluating 'gzipFile.lastModifiedDate.toLocaleDateString'."</li></ul>
+        </li>
+        <li>
+            v. 2019-01-26 Initial (Alpha) Release
+            <ul><li>Initial release.</li></ul>
+        </li>
+    </ul>
 </div>
 
 <div id="issuesDialog" class="atomDialog" title="Known bugs &amp; issues">
@@ -313,7 +340,7 @@
     var editor;
     var simpleEditorJson;
     var advancedEditorSelectedFile;
-    
+
     // Hook the unhandled exceptions so they are (a) logged and (b) not silent for the user
     window.onerror = function (message, url, line, column, error) {
         var str = `Error: ${message}\nURL: ${url}, line: ${line}, ${(column ? ", column: " + column : "")} ${(error ? "\nError: " + error : "")}"`;
@@ -379,6 +406,11 @@
             var data = simpleEditorJson[rowIndex];
             var characterName = savedGame.mapCharacterName(data.character);
 
+            if (characterName == "TraningCamp") {
+                // Training (spelt Traning in the file) character does not have level or stats.
+                continue;
+            }
+
             $statsBody.append(`<tr><td>${characterName}</td>`
                 + spinnerCell(rowIndex, "stats.level", { max: 99 })
                 + spinnerCell(rowIndex, "stats.xp", { max: 999999, step: 1000 })
@@ -389,10 +421,10 @@
                 + spinnerCell(rowIndex, "stats.perception")
                 + spinnerCell(rowIndex, "stats.charisma")
                 + spinnerCell(rowIndex, "stats.luck")
-                + spinnerCell(rowIndex, "stats.freeSkillPoints")
-                + spinnerCell(rowIndex, "stats.freeStatPoints")
-                + spinnerCell(rowIndex, "stats.freeSpecPoints")
-                + spinnerCell(rowIndex, "stats.specLevel")
+                + spinnerCell(rowIndex, "stats.freeSkillPoints", { max: 999 })
+                + spinnerCell(rowIndex, "stats.freeStatPoints", { max: 99 })
+                + spinnerCell(rowIndex, "stats.freeSpecPoints", { max: 99 })
+                + spinnerCell(rowIndex, "stats.specLevel", { max: 99 })
                 + "</tr>");
 
             $skillsBody.append(`<tr><td>${characterName}</td>`
@@ -413,7 +445,7 @@
                 + spinnerCell(rowIndex, "stats.skills.Science", { max: 199, step: 5 })
                 + spinnerCell(rowIndex, "stats.skills.Crafting", { max: 199, step: 5 })
                 + spinnerCell(rowIndex, "stats.skills.Alertness", { max: 199, step: 5 })
-                
+
                 + "</tr>");
 
             $conditionsBody.append(`<tr><td>${characterName}</td>`
