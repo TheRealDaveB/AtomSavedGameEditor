@@ -5,7 +5,7 @@
     <div class="ribbonInner">Beta</div>
 </div>
 <h1>ATOM Save Game Editor</h1>
-<h2>v. 2019-02-09</h2>
+<h2>v. 2021-09-13</h2>
 <footer>
     <ul>
         <li id="creditsButton">Credits</li>
@@ -125,7 +125,7 @@
                     <tr>
                         <th>Character</th>
                         <th>Toxic</th>
-                        <th>Radiation</th>
+                        <th>Radiation / Cold</th>
                         <th>Hunger</th>
                         <th>HungerDmg</th>
                         <th>Rolling</th>
@@ -272,10 +272,48 @@
                 scaled down.
             </p>
         </li>
+        <li>
+            Can I use the editor to edit Trudograd .as files?
+            <p>
+                At your own risk, yes. I've played less than an hour of Trudograd so far (and that was
+                in early Early Access), so it's only had a quick test with a starting character.
+            </p>
+            <p>
+                Trudograd saved games files can be found (on Windows) at
+                <span class="savegameDirectory">%USERPROFILE%\AppData\LocalLow\AtomTeam\Atom_Trudograd</span>.
+            </p>
+            <p>
+                Be sure to save the files back to the same directory!
+            </p>
+            <p>
+                While I certainly haven't played through to the point of recruiting anyone to my party,
+                the file system seems unchanged, so I fully expect the Advance Editor to work unchanged.
+            </p>
+            <p>
+                The Simple Editor is less generic and so may have additional problems. For example, it
+                will show internal party member names (if they differ from what's shown in the game's
+                English UI) and may have trouble with party members with incomplete record structures
+                (if their are any. The only case of this in the original game was the instructor who
+                briefly joined your party in the original game's training camp tutorial).
+            </p>
+        </li>
     </ol>
     <br />
     <h2>Release Notes</h2>
     <ul class="headeredList">
+        <li>
+            v. 2021-09-13 Added (untested) support for Trudograd
+            <ul>
+                <li>
+                    Trudograd saved games files can be found (on Windows) under
+                    <span class="savegameDirectory">%USERPROFILE%\AppData\LocalLow\AtomTeam\Atom_Trudograd</span>
+                </li>
+                <li>
+                    Updated Simple Editor to replace condition.cold rather than condition.radiation
+                    when editing Truograd saved game files.
+                </li>
+            </ul>
+        </li>
         <li>
             v. 2109-02-09 Beta Release
             <ul>
@@ -402,6 +440,7 @@
         $conditionsBody.html("");
 
         simpleEditorJson = savedGame.getJson('player.dat');
+        var isTrudograd = typeof simpleEditorJson[0].conditions.cold !== "undefined";
         for (var rowIndex = 0; rowIndex < simpleEditorJson.length; rowIndex++) {
             var data = simpleEditorJson[rowIndex];
             var characterName = savedGame.mapCharacterName(data.character);
@@ -450,7 +489,7 @@
 
             $conditionsBody.append(`<tr><td>${characterName}</td>`
                 + spinnerCell(rowIndex, "conditions.toxic", { max: 999999, step: 100 })
-                + spinnerCell(rowIndex, "conditions.radiation", { max: 999999, step: 100 })
+                + spinnerCell(rowIndex, "conditions." + (isTrudograd ? "cold" : "radiation"), { max: 999999, step: 100 })
                 + spinnerCell(rowIndex, "conditions.hunger", { max: 999999, step: 100 })
                 + spinnerCell(rowIndex, "conditions.hungerDmg", { max: 99, step: 1 })
                 + spinnerCell(rowIndex, "conditions.rolling", { max: 999999, step: 100 })
